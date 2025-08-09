@@ -2,6 +2,7 @@ import os
 import requests
 
 from config import config
+from weather_types import WeatherResponse
 
 API_URL = config.get("API", "BaseUrl")
 GEO_URL = config.get("API", "GeoUrl")
@@ -20,7 +21,7 @@ def get_current_weather(lat_lon=(None, None), *, city=None):
         "appid": API_KEY,
     }
     r = requests.get(API_URL, params=params)
-    data = r.json()
+    data: WeatherResponse = r.json()
 
     return data["current"]
 
