@@ -93,3 +93,11 @@ class WeatherResponse(TypedDict):
     minutely: List[MinutelyWeather]  # optional
     hourly: List[HourlyWeather]  # optional
     daily: List[DailyWeather]  # optional
+
+
+class City(TypedDict):
+    name: str
+    lat: float
+    lon: float
+    country: str
+    state: NotRequired[str]
