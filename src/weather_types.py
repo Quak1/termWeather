@@ -101,3 +101,5 @@ class City(TypedDict):
     lon: float
     country: str
     state: NotRequired[str]
+    region: str
+    full_name: str

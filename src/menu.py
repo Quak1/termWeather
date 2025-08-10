@@ -10,8 +10,7 @@ def choose_city():
     print("Cities found: ")
     for i in range(len(cities)):
         city = cities[i]
-        state = city["state"] + ", " if "state" in city else ""
-        print(f"{i+1}: {city['name']}, {state}{city['country']}")
+        print(f"{i+1}: {city['name']}, {city["region"]}")
 
     opt = input(
         "Choose a city from the list (1 - 5) or leave empty to try another search: "

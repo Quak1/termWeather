@@ -30,6 +30,16 @@ def get_current_weather(coords=(None, None), *, city=None):
 
 def get_cities(city):
     params = {"q": city, "limit": 5, "appid": API_KEY}
-    r = requests.get(GEO_URL, params)
-    cities: List[City] = r.json()
-    return cities
+    try:
+        r = requests.get(GEO_URL, params)
+        cities: List[City] = r.json()
+        for city in cities:
+            city["region"] = (
+                f'{city["state"]}, {city["country"]}'
+                if "state" in city
+                else city["country"]
+            )
+            city["full_name"] = f"{city["name"]}, {city["region"]}"
+        return cities
+    except Exception:
+        return []
