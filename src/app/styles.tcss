@@ -1,0 +1,45 @@
+Screen {
+  align: center middle;
+  layers: base top;
+}
+
+.name {
+  align: center middle;
+  height: 100%;
+}
+
+.country {
+  color: $foreground-muted;
+}
+
+.extra {
+  align-vertical: middle;
+  height: 100%;
+}
+
+.bold {
+  text-style: bold;
+}
+
+.center{
+  text-align: center;
+  width: 100%;
+}
+
+
+.container {
+  layout: horizontal;
+}
+
+.digits {
+  width: auto;
+}
+
+#city-search {
+  border: solid;
+  width: auto;
+  layer: top;
+  offset-y: -10;
+  min-width: 50;
+  color:red;
+}

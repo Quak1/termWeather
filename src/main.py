@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+from app.app import WeatherApp
 from weather_api import get_current_weather
 from menu import choose_city
 
@@ -15,4 +16,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+    app = WeatherApp()
+    app.run()
