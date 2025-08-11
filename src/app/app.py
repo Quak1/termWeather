@@ -14,7 +14,10 @@ class WeatherApp(App):
     def compose(self) -> ComposeResult:
         yield Header()
         yield Footer()
-        yield WeatherCardContainer()
+
+        with VerticalScroll(can_focus=False):
+            yield WeatherCardContainer(id="card-container")
+            yield Button("+", "success", id="btn-add-card")
 
     def on_city_search_cities_selected(self, message: CitySearch.CitiesSelected):
         for city in message.cities:
@@ -31,18 +34,18 @@ class WeatherApp(App):
             self.action_search_city()
 
 
-class WeatherCardContainer(VerticalScroll, can_focus=False):
-    BINDINGS = [("t", "move_card_top", "Move to the top")]
-
-    def compose(self):
-        yield Container(id="card-container")
-        yield Button("+", "success", id="btn-add-card")
+class WeatherCardContainer(Container, can_focus=False):
+    BINDINGS = [
+        ("t", "move_card_top", "Move to the top"),
+        ("d", "remove_weather_card", "Delete city from the list"),
+    ]
 
     def action_move_card_top(self):
         focused = self.app.focused
-        if (
-            focused
-            and "city-weather" in focused.classes
-            and focused.id != "btn-add-card"
-        ):
+        if focused and "city-weather" in focused.classes:
             self.move_child(focused, before=0)
+
+    def action_remove_weather_card(self):
+        focused = self.app.focused
+        if focused and "city-weather" in focused.classes:
+            focused.remove()

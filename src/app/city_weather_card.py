@@ -8,7 +8,7 @@ from weather_api import get_current_weather
 from weather_types import GeoCity, WeatherResponse, weather_code_to_icon
 
 
-class CityWeatherCard(VerticalGroup):
+class CityWeatherCard(VerticalGroup, can_focus=True):
     def __init__(self, city: GeoCity, classes: str | None = None) -> None:
         super().__init__(classes=classes)
         self.city = city
@@ -32,7 +32,7 @@ class CityWeatherCard(VerticalGroup):
             self.query_one(WeeklyWeatherContainer).weather = self.weather
 
 
-class CurrentWeather(HorizontalGroup, can_focus=True):
+class CurrentWeather(HorizontalGroup, can_focus=False):
     weather: reactive[WeatherResponse | None] = reactive(None, recompose=True)
 
     def __init__(self, city: GeoCity, classes: str | None = None) -> None:
