@@ -8,7 +8,7 @@ from weather_api import get_current_weather
 from weather_types import GeoCity, weather_code_to_icon
 
 
-class CityWeatherCard(HorizontalGroup):
+class CityWeatherCard(HorizontalGroup, can_focus=True):
     weather = reactive(None, recompose=True)
 
     def __init__(

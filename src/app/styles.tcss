@@ -1,6 +1,11 @@
 .city-weather {
   border: solid;
 }
+
+.city-weather:focus {
+  background: green;
+}
+
 Screen {
   align: center middle;
   layers: base top;
