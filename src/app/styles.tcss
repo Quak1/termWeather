@@ -1,3 +1,6 @@
+.city-weather {
+  border: solid;
+}
 Screen {
   align: center middle;
   layers: base top;
