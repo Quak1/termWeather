@@ -1,34 +1,38 @@
+from datetime import datetime, timezone
 from textual.app import ComposeResult
-from textual.containers import HorizontalGroup, VerticalGroup, Center
+from textual.containers import HorizontalGroup, HorizontalScroll, VerticalGroup, Center
 from textual.reactive import reactive
-from textual.widget import Widget
-from textual.widgets import Digits, Label
+from textual.widgets import Collapsible, Digits, Label
 
 from weather_api import get_current_weather
-from weather_types import GeoCity, weather_code_to_icon
+from weather_types import GeoCity, WeatherResponse, weather_code_to_icon
 
 
-class CityWeatherCard(HorizontalGroup, can_focus=True):
-    weather = reactive(None, recompose=True)
+class CityWeatherCard(VerticalGroup):
+    def __init__(self, city: GeoCity, classes: str | None = None) -> None:
+        super().__init__(classes=classes)
+        self.city = city
 
-    def __init__(
-        self,
-        city: GeoCity,
-        *children: Widget,
-        name: str | None = None,
-        id: str | None = None,
-        classes: str | None = None,
-        disabled: bool = False,
-        markup: bool = True,
-    ) -> None:
-        super().__init__(
-            *children,
-            name=name,
-            id=id,
-            classes=classes,
-            disabled=disabled,
-            markup=markup,
-        )
+    def compose(self) -> ComposeResult:
+        yield CurrentWeather(self.city, classes="current-weather")
+        with Collapsible():
+            yield HourlyWeatherContainer(classes="hourly-weather")
+
+    def on_mount(self):
+        self.call_after_refresh(self.update_weather_info)
+
+    async def update_weather_info(self):
+        self.weather = await get_current_weather((self.city["lat"], self.city["lon"]))
+        if self.weather:
+            self.query_one(CurrentWeather).weather = self.weather
+            self.query_one(HourlyWeatherContainer).weather = self.weather
+
+
+class CurrentWeather(HorizontalGroup, can_focus=True):
+    weather: reactive[WeatherResponse | None] = reactive(None, recompose=True)
+
+    def __init__(self, city: GeoCity, classes: str | None = None) -> None:
+        super().__init__(classes=classes)
         self.city = city
 
     def compose(self) -> ComposeResult:
@@ -73,8 +77,30 @@ class CityWeatherCard(HorizontalGroup, can_focus=True):
             with VerticalGroup():
                 yield Label("Failed to get weather info.")
 
-    def on_mount(self):
-        self.call_after_refresh(self.update_weather_info)
 
-    async def update_weather_info(self):
-        self.weather = await get_current_weather((self.city["lat"], self.city["lon"]))
+class HourlyWeatherContainer(HorizontalScroll):
+    weather: reactive[WeatherResponse | None] = reactive(None, recompose=True)
+
+    def compose(self) -> ComposeResult:
+        if not self.weather:
+            self.loading = True
+            return
+
+        self.loading = False
+
+        for i, hour in enumerate(self.weather["hourly"]):
+            if i > 24:
+                return
+            if i % 2 == 0:
+                continue
+
+            time = datetime.fromtimestamp(
+                hour["dt"] + self.weather["timezone_offset"], timezone.utc
+            ).strftime("%-I %p")
+
+            yield VerticalGroup(
+                Label(time),
+                Label(str(hour["temp"])),
+                Label(f"{hour['pop']*100}%"),
+                classes="hour-card",
+            )

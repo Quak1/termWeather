@@ -1,3 +1,10 @@
+.hourly-weather {
+  height: auto;
+}
+.hour-card {
+  border: solid;
+  width: auto;
+}
 #card-container {
   border: solid;
   height: auto;
