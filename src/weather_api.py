@@ -3,14 +3,14 @@ import requests
 from typing import List
 
 from config import config
-from weather_types import WeatherResponse, City
+from weather_types import WeatherResponse, GeoCity
 
 API_URL = config.get("API", "BaseUrl")
 GEO_URL = config.get("API", "GeoUrl")
 API_KEY = os.getenv("API_KEY")
 
 
-def get_current_weather(coords=(None, None), *, city=None):
+async def get_current_weather(coords=(None, None), *, city=None):
     if city:
         city = get_cities(city)[0]
         coords = (city["lat"], city["lon"])
@@ -19,20 +19,22 @@ def get_current_weather(coords=(None, None), *, city=None):
         "lat": coords[0],
         "lon": coords[1],
         "units": config.get("API", "units"),
-        "exclude": ",".join(["minutely", "hourly", "daily", "alerts"]),
+        "exclude": ",".join(["minutely", "alerts"]),
         "appid": API_KEY,
     }
-    r = requests.get(API_URL, params=params)
-    data: WeatherResponse = r.json()
-
-    return data["current"]
+    try:
+        r = requests.get(API_URL, params=params)
+        data: WeatherResponse = r.json()
+        return data
+    except Exception:
+        return None
 
 
 def get_cities(city):
     params = {"q": city, "limit": 5, "appid": API_KEY}
     try:
         r = requests.get(GEO_URL, params)
-        cities: List[City] = r.json()
+        cities: List[GeoCity] = r.json()
         for city in cities:
             city["region"] = (
                 f'{city["state"]}, {city["country"]}'

@@ -1,6 +1,4 @@
-from logging import exception
 from weather_api import get_cities
-from weather_types import City
 
 
 def choose_city():

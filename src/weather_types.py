@@ -90,12 +90,12 @@ class WeatherResponse(TypedDict):
     timezone: str
     timezone_offset: int
     current: CurrentWeather
-    minutely: List[MinutelyWeather]  # optional
+    minutely: NotRequired[List[MinutelyWeather]]  # optional
     hourly: List[HourlyWeather]  # optional
     daily: List[DailyWeather]  # optional
 
 
-class City(TypedDict):
+class GeoCity(TypedDict):
     name: str
     lat: float
     lon: float
@@ -103,3 +103,25 @@ class City(TypedDict):
     state: NotRequired[str]
     region: str
     full_name: str
+
+
+weather_code_to_icon = {
+    "01d": "",
+    "01n": "",
+    "02d": "",
+    "02n": "",
+    "03d": "󰖐",
+    "03n": "󰖐",
+    "04d": "",
+    "04n": "",
+    "09d": "",
+    "09n": "",
+    "10d": "",
+    "10n": "",
+    "11d": "",
+    "11n": "",
+    "13d": "",
+    "13n": "",
+    "50d": "",
+    "50n": "",
+}
