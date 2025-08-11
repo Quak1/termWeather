@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from textual.app import ComposeResult
 from textual.containers import HorizontalGroup, HorizontalScroll, VerticalGroup, Center
 from textual.reactive import reactive
-from textual.widgets import Collapsible, Digits, Label
+from textual.widgets import Collapsible, DataTable, Digits, Label
 
 from weather_api import get_current_weather
 from weather_types import GeoCity, WeatherResponse, weather_code_to_icon
@@ -15,8 +15,11 @@ class CityWeatherCard(VerticalGroup):
 
     def compose(self) -> ComposeResult:
         yield CurrentWeather(self.city, classes="current-weather")
-        with Collapsible():
+        with Collapsible(title="Extra forecast information"):
+            yield Label("Hourly forecast:")
             yield HourlyWeatherContainer(classes="hourly-weather")
+            yield Label("Weekly forecast:")
+            yield WeeklyWeatherContainer(classes="daily-weather")
 
     def on_mount(self):
         self.call_after_refresh(self.update_weather_info)
@@ -26,6 +29,7 @@ class CityWeatherCard(VerticalGroup):
         if self.weather:
             self.query_one(CurrentWeather).weather = self.weather
             self.query_one(HourlyWeatherContainer).weather = self.weather
+            self.query_one(WeeklyWeatherContainer).weather = self.weather
 
 
 class CurrentWeather(HorizontalGroup, can_focus=True):
@@ -78,7 +82,7 @@ class CurrentWeather(HorizontalGroup, can_focus=True):
                 yield Label("Failed to get weather info.")
 
 
-class HourlyWeatherContainer(HorizontalScroll):
+class HourlyWeatherContainer(HorizontalScroll, can_focus=False):
     weather: reactive[WeatherResponse | None] = reactive(None, recompose=True)
 
     def compose(self) -> ComposeResult:
@@ -100,7 +104,43 @@ class HourlyWeatherContainer(HorizontalScroll):
 
             yield VerticalGroup(
                 Label(time),
-                Label(str(hour["temp"])),
+                Label(str(round(hour["temp"], 1)) + "°"),
                 Label(f"{hour['pop']*100}%"),
                 classes="hour-card",
+            )
+
+
+class WeeklyWeatherContainer(DataTable, can_focus=False):
+    weather: reactive[WeatherResponse | None] = reactive(None)
+
+    def on_mount(self):
+        self.loading = True
+        self.add_column("Day")
+        self.add_column("Precipitation %")
+        self.add_column("Max UV index")
+        self.add_column("Max temp")
+        self.add_column("Min temp")
+
+    def watch_weather(self, weather: WeatherResponse | None):
+        if not weather:
+            return
+
+        self.loading = False
+
+        self.clear()
+        daily_weather = weather["daily"]
+        for i, day in enumerate(daily_weather):
+            time = datetime.fromtimestamp(
+                day["dt"] + weather["timezone_offset"], timezone.utc
+            ).strftime("%a")
+
+            if i == 0:
+                time = "Today"
+
+            self.add_row(
+                time,
+                int(day["pop"] * 100),
+                day["uvi"],
+                day["temp"]["max"],
+                day["temp"]["min"],
             )
