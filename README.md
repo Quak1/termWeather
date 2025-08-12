@@ -8,7 +8,7 @@ termWeather provides current weather conditions, hourly forecasts, and weekly fo
 
 ## Features
 - **Current weather**: Search weather forecasts by city
-- **Hourly and weekl forecast**: Weather predictions with precipitation probability and more
+- **Hourly and weekly forecast**: Weather predictions with precipitation probability and more
 - **Persistent storage**: Save your favorite cities to configuration file
 - **Auto refresh**: Weather data updates automatically every 10 minutes
 - **Interactive TUI**: Terminal user interface with keyboard shortcuts
@@ -17,14 +17,6 @@ termWeather provides current weather conditions, hourly forecasts, and weekly fo
 - Python 3.8+
 - [OpenWeatherMap API](https://openweathermap.org/api) key (free tier works)
 - A [Nerd Font](https://www.nerdfonts.com/) (for icons)
-
-## Installation
-1. Clone this repository:
-2. Install requirements
-    ```bash
-    pip install -r requirements.txt
-    ```
-3. Copy `.env.example` to `.env` and set your API key
 
 ## Installation
 1. Clone the repository:
@@ -71,17 +63,15 @@ python3 ./src/main.py
 | `d` | Delete weather card |
 | `u` | Force update weather data |
 | `ctrl+p` | Open the default command pallete |
-| `ctrl+q` | Quit the application |
+| `ctrl+q` | Close the application |
 
 ## Configuration
 
 The app uses a configuration file (`src/config.ini`) to store settings and saved cities:
-
-### Customizable Settings
 
 - **units**: set to one of
     - `metric` (Celsius)
     - `imperial` (Fahrenheit)
     - `standard` (Kelvin)
 - **update_time_s**: auto-refresh interval in seconds (default: 600 = 10 minutes). OpenWeatherMap API data is updated every 10 minutes, 600 seconds makes sure you have the most up-to-date data.
-- **delete a saved city**: Remove the desired `CITY - ...` section from the configuration file.
+- **delete a saved city**: Remove the desired `CITY - ...` section from the configuration file before launching the application.
