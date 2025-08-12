@@ -49,7 +49,9 @@ class CurrentWeather(HorizontalGroup, can_focus=False):
             yield Label(self.city["region"], classes="city-region")
 
         if not self.weather:
-            yield VerticalGroup(Label("Loading..."))
+            group = VerticalGroup()
+            group.loading = True
+            yield group
             return
 
         try:
@@ -76,7 +78,7 @@ class CurrentWeather(HorizontalGroup, can_focus=False):
                 uvi = self.weather["current"]["uvi"]
                 yield Label(f"UVI: {uvi}")
 
-                humidity = int(self.weather["daily"][0]["pop"] * 100)
+                humidity = int(self.weather["daily"][0]["humidity"])
                 yield Label(f"Humidity: {humidity}%")
 
                 feels_like = round(self.weather["current"]["feels_like"], 1)

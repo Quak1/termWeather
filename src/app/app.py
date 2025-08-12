@@ -10,7 +10,7 @@ from config import load_cities, save_city
 class WeatherApp(App):
     CSS_PATH = "styles.tcss"
 
-    BINDINGS = [("a", "search_city", "Add another city")]
+    BINDINGS = [("a", "search_city", "Add city")]
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -43,8 +43,9 @@ class WeatherApp(App):
 class WeatherCardContainer(Container, can_focus=False):
     BINDINGS = [
         ("t", "move_card_top", "Move to the top"),
-        ("d", "remove_weather_card", "Delete city from the list"),
-        ("s", "save_city", "Save city for future usage"),
+        ("s", "save_city", "Save"),
+        ("d", "remove_weather_card", "Delete"),
+        ("u", "update_city_weather", "Force update"),
     ]
 
     def action_move_card_top(self):
@@ -65,3 +66,8 @@ class WeatherCardContainer(Container, can_focus=False):
                 self.notify(msg)
             else:
                 self.notify(msg, severity="error")
+
+    async def action_update_city_weather(self):
+        focused = self.app.focused
+        if focused and "city-weather" in focused.classes:
+            await focused.update_weather_info()

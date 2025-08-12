@@ -16,7 +16,7 @@ def save_city(city: GeoCity):
         config.add_section(section)
 
         config.set(section, "lat", str(city["lat"]))
-        config.set(section, "lon", str(city["lat"]))
+        config.set(section, "lon", str(city["lon"]))
         config.set(section, "name", str(city["name"]))
         config.set(section, "region", str(city["region"]))
 
