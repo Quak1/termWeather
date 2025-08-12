@@ -26,15 +26,14 @@ class WeatherApp(App):
                 CityWeatherCard(city, classes="city-weather")
             )
 
-    def on_city_search_cities_selected(self, message: CitySearch.CitiesSelected):
-        for city in message.cities:
-            self.query_one("#card-container").mount(
-                CityWeatherCard(city, classes="city-weather")
-            )
-
     def action_search_city(self):
-        if not self.query("#city-search"):
-            self.mount(CitySearch(id="city-search"))
+        def selected(cities):
+            for city in cities:
+                self.query_one("#card-container").mount(
+                    CityWeatherCard(city, classes="city-weather")
+                )
+
+        self.push_screen(CitySearch(), selected)
 
     def on_button_pressed(self, message: Button.Pressed):
         if message.button.id == "btn-add-card":

@@ -1,18 +1,14 @@
 from textual import on
 from textual.app import ComposeResult
-from textual.containers import VerticalGroup
 from textual.css.query import NoMatches
-from textual.message import Message
 from textual.widgets import Button, Input, Label, SelectionList
+from textual.screen import ModalScreen
 
 from weather_api import get_cities
 
 
-class CitySearch(VerticalGroup):
-    class CitiesSelected(Message):
-        def __init__(self, cities) -> None:
-            self.cities = cities
-            super().__init__()
+class CitySearch(ModalScreen):
+    BINDINGS = [("escape", "close_modal", "Close search window")]
 
     def compose(self) -> ComposeResult:
         yield Label("Enter a city and country:")
@@ -55,7 +51,7 @@ class CitySearch(VerticalGroup):
         selection = self.query_one("#city-search-list", SelectionList)
 
         selected_cities = [self.cities[i] for i in selection.selected]
+        self.dismiss(selected_cities)
 
-        self.post_message(self.CitiesSelected(selected_cities))
-
-        self.remove()
+    def action_close_modal(self):
+        self.dismiss([])
