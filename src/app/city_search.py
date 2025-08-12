@@ -1,5 +1,6 @@
 from textual import on
 from textual.app import ComposeResult
+from textual.containers import Container
 from textual.css.query import NoMatches
 from textual.widgets import Button, Input, Label, SelectionList
 from textual.screen import ModalScreen
@@ -11,8 +12,9 @@ class CitySearch(ModalScreen):
     BINDINGS = [("escape", "close_modal", "Close search window")]
 
     def compose(self) -> ComposeResult:
-        yield Label("Enter a city and country:")
-        yield Input(id="city-search-input")
+        with Container():
+            yield Label("Enter a city and country:", id="title")
+            yield Input(id="city-search-input")
 
     async def on_input_submitted(self, event: Input.Submitted):
         event.input.disabled = True
@@ -24,10 +26,11 @@ class CitySearch(ModalScreen):
             pass
 
         cities = get_cities(event.value)
+        container = self.query_one(Container)
         if not cities:
-            self.mount(
+            container.mount(
                 Label(
-                    "It seems your search returned no matches, please try again.",
+                    "It seems your search returned no matches,\nplease try again.",
                     id="notice",
                 )
             )
@@ -41,9 +44,10 @@ class CitySearch(ModalScreen):
         for i, city in enumerate(cities):
             selection_list.add_option((city["full_name"], i))
 
-        self.mount(Label("Choose one or multiple cities from the list:"))
-        self.mount(selection_list)
-        self.mount(Button("Submit", id="city-search-submit"))
+        container.mount(Label("Choose at least one city from the list:"))
+        container.mount(selection_list)
+        container.mount(Button("Submit", id="city-search-submit", variant="success"))
+        container.mount(Button("Cancel", id="city-search-cancel", variant="error"))
         selection_list.focus()
 
     @on(Button.Pressed, "#city-search-submit")
@@ -53,5 +57,6 @@ class CitySearch(ModalScreen):
         selected_cities = [self.cities[i] for i in selection.selected]
         self.dismiss(selected_cities)
 
+    @on(Button.Pressed, "#city-search-cancel")
     def action_close_modal(self):
         self.dismiss([])

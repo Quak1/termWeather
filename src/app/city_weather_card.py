@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from textual.app import ComposeResult
-from textual.containers import HorizontalGroup, HorizontalScroll, VerticalGroup, Center
+from textual.containers import HorizontalGroup, HorizontalScroll, VerticalGroup
 from textual.reactive import reactive
 from textual.widgets import Collapsible, DataTable, Digits, Label
 
@@ -17,10 +17,10 @@ class CityWeatherCard(VerticalGroup, can_focus=True):
     def compose(self) -> ComposeResult:
         yield CurrentWeather(self.city, classes="current-weather")
         with Collapsible(title="Extra forecast information"):
-            yield Label("Hourly forecast:")
-            yield HourlyWeatherContainer(classes="hourly-weather")
-            yield Label("Weekly forecast:")
-            yield WeeklyWeatherContainer(classes="daily-weather")
+            yield Label("Hourly forecast:", classes="bold")
+            yield HourlyWeatherContainer(classes="hourly-forecast-container")
+            yield Label("Weekly forecast:", classes="bold")
+            yield WeeklyWeatherContainer(classes="weekly-forecast-container")
 
     def on_mount(self):
         self.call_after_refresh(self.update_weather_info)
@@ -44,9 +44,9 @@ class CurrentWeather(HorizontalGroup, can_focus=False):
         self.city = city
 
     def compose(self) -> ComposeResult:
-        with VerticalGroup():
-            yield Label(self.city["name"], classes="city-name")
-            yield Label(self.city["region"], classes="city-region")
+        with VerticalGroup(classes="name-container"):
+            yield Label(self.city["name"], classes="bold")
+            yield Label(self.city["region"], classes="muted")
 
         if not self.weather:
             group = VerticalGroup()
@@ -55,19 +55,19 @@ class CurrentWeather(HorizontalGroup, can_focus=False):
             return
 
         try:
-            with VerticalGroup():
+            with VerticalGroup(classes="temp-container"):
                 current_temp = round(self.weather["current"]["temp"], 1)
-                yield Center(
+                yield HorizontalGroup(
                     Digits(str(current_temp) or "", classes="digits"),
-                    Label("○", classes="circle"),
-                    classes="container",
+                    Label("○"),
+                    classes="digits-container",
                 )
 
                 max_temp = round(self.weather["daily"][0]["temp"]["max"], 1)
                 min_temp = round(self.weather["daily"][0]["temp"]["min"], 1)
-                yield Label(f"↑{max_temp}° | ↓{min_temp}°", classes="center")
+                yield Label(f"↑{max_temp}° | ↓{min_temp}°", classes="max-min-temp")
 
-            with VerticalGroup():
+            with VerticalGroup(classes="info-container"):
                 weather_code = self.weather["current"]["weather"][0]["icon"]
                 icon = weather_code_to_icon[weather_code]
                 description = self.weather["current"]["weather"][0][
@@ -88,7 +88,7 @@ class CurrentWeather(HorizontalGroup, can_focus=False):
                 yield Label("Failed to get weather info.")
 
 
-class HourlyWeatherContainer(HorizontalScroll, can_focus=False):
+class HourlyWeatherContainer(HorizontalScroll):
     weather: reactive[WeatherResponse | None] = reactive(None, recompose=True)
 
     def compose(self) -> ComposeResult:
@@ -111,7 +111,7 @@ class HourlyWeatherContainer(HorizontalScroll, can_focus=False):
             yield VerticalGroup(
                 Label(time),
                 Label(str(round(hour["temp"], 1)) + "°"),
-                Label(f"{hour['pop']*100}%"),
+                Label(f" {int(hour['pop']*100)}%"),
                 classes="hour-card",
             )
 

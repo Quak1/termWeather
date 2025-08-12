@@ -33,7 +33,7 @@ class WeatherApp(App):
                     CityWeatherCard(city, classes="city-weather")
                 )
 
-        self.push_screen(CitySearch(), selected)
+        self.push_screen(CitySearch(classes="modal"), selected)
 
     def on_button_pressed(self, message: Button.Pressed):
         if message.button.id == "btn-add-card":

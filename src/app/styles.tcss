@@ -1,65 +1,99 @@
-.hourly-weather {
-  height: auto;
-}
-.hour-card {
-  border: solid;
-  width: auto;
-}
-#card-container {
-  border: solid;
-  height: auto;
-}
-
-.city-weather {
-  border: solid;
-}
-
-.city-weather:focus {
-  background: green;
-}
-
 Screen {
   align: center middle;
   layers: base top;
 }
 
-.name {
-  align: center middle;
-  height: 100%;
-}
-
-.country {
+.muted {
   color: $foreground-muted;
-}
-
-.extra {
-  align-vertical: middle;
-  height: 100%;
 }
 
 .bold {
   text-style: bold;
 }
 
-.center{
-  text-align: center;
+#card-container {
+  height: auto;
+}
+
+#btn-add-card {
+  margin: 0 2;
   width: 100%;
 }
 
+/* Current weather */
+.city-weather {
+  margin: 1 2;
+  background: $panel;
 
-.container {
-  layout: horizontal;
 }
 
-.digits {
-  width: auto;
+.city-weather:focus {
+  background: $secondary 50%;
 }
 
-#city-search {
-  border: solid;
-  width: auto;
-  layer: top;
-  offset-y: -10;
-  min-width: 50;
-  color:red;
+.name-container {
+  padding-left: 2;
+  height: 100%;
+  align-vertical: middle;
+}
+
+.temp-container {
+
+  .digits-container {
+    align-horizontal: center;
+
+    .digits {
+      width: auto;
+    }
+  }
+  .max-min-temp {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+.info-container {
+  align-horizontal: right;
+}
+
+/* extra forecast info */
+.hourly-forecast-container {
+  height: auto;
+  margin-bottom: 1;
+
+  .hour-card {
+    border: solid $accent;
+    box-sizing: content-box;
+    text-align: center;
+    width: 7;
+
+    Label {
+      width: 100%;
+      text-align: center;
+    }
+  }
+}
+.hourly-forecast-container:focus{
+  background: $secondary 20%;
+}
+
+
+.modal {
+  Container {
+    width: 50;
+    height: auto;
+    padding: 1 2;
+    border: solid $primary;
+  }
+  #title {
+    margin: 0;
+  }
+  Label {
+    margin-top: 1;
+    text-wrap: wrap;
+  }
+  Button {
+    width: 100%;
+    margin-top: 1;
+  }
 }
