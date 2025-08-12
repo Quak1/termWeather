@@ -4,6 +4,7 @@ from textual.containers import HorizontalGroup, HorizontalScroll, VerticalGroup,
 from textual.reactive import reactive
 from textual.widgets import Collapsible, DataTable, Digits, Label
 
+from config import config
 from weather_api import get_current_weather
 from weather_types import GeoCity, WeatherResponse, weather_code_to_icon
 
@@ -23,6 +24,9 @@ class CityWeatherCard(VerticalGroup, can_focus=True):
 
     def on_mount(self):
         self.call_after_refresh(self.update_weather_info)
+
+        interval = config.get("API", "update_time_s")
+        self.set_interval(int(interval), self.update_weather_info)
 
     async def update_weather_info(self):
         self.weather = await get_current_weather((self.city["lat"], self.city["lon"]))
