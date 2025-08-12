@@ -9,7 +9,7 @@ from config import load_cities, save_city
 
 class WeatherApp(App):
     CSS_PATH = "styles.tcss"
-
+    TITLE = "termWeather"
     BINDINGS = [("a", "search_city", "Add city")]
 
     def compose(self) -> ComposeResult:

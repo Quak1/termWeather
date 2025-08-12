@@ -13,7 +13,7 @@ class CitySearch(ModalScreen):
 
     def compose(self) -> ComposeResult:
         with Container():
-            yield Label("Enter a city and country:", id="title")
+            yield Label("Enter a city:", id="title")
             yield Input(id="city-search-input")
 
     async def on_input_submitted(self, event: Input.Submitted):
