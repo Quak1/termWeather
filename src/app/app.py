@@ -4,6 +4,7 @@ from textual.widgets import Button, Footer, Header
 
 from app.city_weather_card import CityWeatherCard
 from app.city_search import CitySearch
+from config import load_cities, save_city
 
 
 class WeatherApp(App):
@@ -18,6 +19,12 @@ class WeatherApp(App):
         with VerticalScroll(can_focus=False):
             yield WeatherCardContainer(id="card-container")
             yield Button("+", "success", id="btn-add-card")
+
+    def on_mount(self):
+        for city in load_cities():
+            self.query_one("#card-container").mount(
+                CityWeatherCard(city, classes="city-weather")
+            )
 
     def on_city_search_cities_selected(self, message: CitySearch.CitiesSelected):
         for city in message.cities:
@@ -38,6 +45,7 @@ class WeatherCardContainer(Container, can_focus=False):
     BINDINGS = [
         ("t", "move_card_top", "Move to the top"),
         ("d", "remove_weather_card", "Delete city from the list"),
+        ("s", "save_city", "Save city for future usage"),
     ]
 
     def action_move_card_top(self):
@@ -49,3 +57,12 @@ class WeatherCardContainer(Container, can_focus=False):
         focused = self.app.focused
         if focused and "city-weather" in focused.classes:
             focused.remove()
+
+    def action_save_city(self):
+        focused = self.app.focused
+        if focused and "city-weather" in focused.classes:
+            msg = save_city(focused.city)
+            if msg.startswith("Success"):
+                self.notify(msg)
+            else:
+                self.notify(msg, severity="error")
